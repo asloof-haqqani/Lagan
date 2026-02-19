@@ -126,9 +126,9 @@ const CheckBooking: React.FC<CheckBookingProps> = ({ onCheck, isLoading }) => {
 
                 {/* Perforated Line */}
                 <div className="relative flex items-center justify-between px-4">
-                    <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-silver-100 dark:bg-slate-950 -ml-6 md:-ml-7"></div>
+                    <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-silver-100 dark:bg-dark-bg -ml-6 md:-ml-7 z-10"></div>
                     <div className="flex-1 border-b-2 border-dashed border-slate-200 dark:border-slate-700"></div>
-                    <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-silver-100 dark:bg-slate-950 -mr-6 md:-mr-7"></div>
+                    <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-silver-100 dark:bg-dark-bg -mr-6 md:-mr-7 z-10"></div>
                 </div>
 
                 {/* Footer */}

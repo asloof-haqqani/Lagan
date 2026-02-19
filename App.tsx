@@ -216,15 +216,18 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-silver-50 dark:bg-dark-bg transition-colors duration-500">
+      {/* Texture Overlay */}
+      <div className="bg-noise"></div>
+
       {/* Loading Overlay */}
       {isLoading && <BusLoader variant="overlay" text="Processing..." />}
 
       {/* Ambient Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/20 dark:bg-primary/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-purple-400/20 dark:bg-purple-900/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-1/3 w-[500px] h-[500px] bg-pink-400/20 dark:bg-pink-900/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-blob animation-delay-4000"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] bg-primary/20 dark:bg-primary/15 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-60 animate-blob"></div>
+        <div className="absolute top-[20%] -right-[10%] w-[600px] h-[600px] bg-purple-400/20 dark:bg-purple-900/15 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-60 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[600px] h-[600px] bg-cyan-400/20 dark:bg-cyan-900/15 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-60 animate-blob animation-delay-4000"></div>
       </div>
 
       {showIntro && <Intro onFinish={() => setShowIntro(false)} />}
@@ -237,26 +240,26 @@ const App: React.FC = () => {
             <>
               <Hero onBookNow={() => handleNavigate('booking')} />
               
-              <section id="booking-section" className="relative z-30 px-4 -mt-20 md:-mt-32 pb-20">
+              <section id="booking-section" className="relative z-30 px-4 -mt-24 md:-mt-36 pb-24">
                 <div className="max-w-5xl mx-auto">
                   <div className="flex justify-center mb-8 animate-fade-in-up [animation-delay:800ms] opacity-0" style={{ animationFillMode: 'forwards' }}>
-                      <div className="bg-white/10 backdrop-blur-md p-1.5 rounded-full border border-white/20 inline-flex shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
+                      <div className="bg-white/10 backdrop-blur-xl p-1.5 rounded-full border border-white/20 inline-flex shadow-2xl shadow-black/10">
                           <button
                           onClick={() => setActiveTab('new')}
-                          className={`px-6 md:px-8 py-3 rounded-full font-bold text-sm transition-all duration-300 ${
+                          className={`px-8 md:px-10 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 ${
                               activeTab === 'new' 
-                              ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
+                              ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-100' 
+                              : 'text-white/70 hover:bg-white/5 hover:text-white scale-95'
                           }`}
                           >
                           Book Ticket
                           </button>
                           <button
                           onClick={() => setActiveTab('check')}
-                          className={`px-6 md:px-8 py-3 rounded-full font-bold text-sm transition-all duration-300 ${
+                          className={`px-8 md:px-10 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 ${
                               activeTab === 'check' 
-                              ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
+                              ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-100' 
+                              : 'text-white/70 hover:bg-white/5 hover:text-white scale-95'
                           }`}
                           >
                           Check Status
@@ -264,7 +267,7 @@ const App: React.FC = () => {
                       </div>
                   </div>
 
-                  <div className="transition-all duration-500 ease-in-out">
+                  <div className="transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
                     {activeTab === 'new' ? (
                       <BookingForm onSubmit={submitBooking} />
                     ) : (
@@ -285,31 +288,31 @@ const App: React.FC = () => {
           {currentPage === 'safety' && <InfoSection id="safety" />}
         </main>
 
-        <footer className="bg-slate-950/80 backdrop-blur-xl text-white py-12 md:py-20 border-t border-slate-900">
+        <footer className="bg-dark-bg/80 backdrop-blur-2xl text-white py-16 md:py-24 border-t border-white/5 relative z-20">
           <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-center md:text-left">
             <div className="md:col-span-2">
-              <h3 className="text-3xl font-black mb-6 tracking-tight">LAGAN<span className="text-primary">BUS</span></h3>
-              <p className="text-slate-400 text-lg leading-relaxed max-w-sm mx-auto md:mx-0">
+              <h3 className="text-3xl font-black mb-6 tracking-tighter">LAGAN<span className="text-primary">BUS</span></h3>
+              <p className="text-slate-400 text-lg leading-relaxed max-w-sm mx-auto md:mx-0 font-light">
                   Redefining intercity travel in Sri Lanka. 
                   Luxury coaches, professional crews, and a commitment to punctuality.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-white uppercase tracking-widest mb-6">Contact</h4>
-              <p className="text-slate-400 mb-2">Nintavur Main Road</p>
-              <p className="text-slate-400 mb-4">Eastern Province, Sri Lanka</p>
-              <p className="text-2xl font-bold text-white">+94 70 136 2527</p>
+              <h4 className="font-bold text-white uppercase tracking-widest text-xs mb-8 opacity-70">Contact Us</h4>
+              <p className="text-slate-300 mb-2 font-medium">Nintavur Main Road</p>
+              <p className="text-slate-400 mb-6">Eastern Province, Sri Lanka</p>
+              <p className="text-2xl font-bold text-white tracking-tight">+94 70 136 2527</p>
             </div>
             <div>
-              <h4 className="font-bold text-white uppercase tracking-widest mb-6">Legal</h4>
-              <ul className="space-y-3 text-slate-400">
-                  <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-                  <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-                  <li><a href="#" className="hover:text-primary transition-colors">Refund Policy</a></li>
+              <h4 className="font-bold text-white uppercase tracking-widest text-xs mb-8 opacity-70">Legal</h4>
+              <ul className="space-y-4 text-slate-400">
+                  <li><a href="#" className="hover:text-primary transition-colors hover:translate-x-1 inline-block duration-200">Privacy Policy</a></li>
+                  <li><a href="#" className="hover:text-primary transition-colors hover:translate-x-1 inline-block duration-200">Terms of Service</a></li>
+                  <li><a href="#" className="hover:text-primary transition-colors hover:translate-x-1 inline-block duration-200">Refund Policy</a></li>
               </ul>
             </div>
           </div>
-          <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm gap-4">
+          <div className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm gap-4">
               <p 
                 onClick={handleSecretAdminAccess}
                 className="select-none cursor-default transition-colors hover:text-slate-400 active:text-primary"
@@ -321,9 +324,9 @@ const App: React.FC = () => {
                   href="https://wedoxa2025-info.github.io/wedoxa-gen-z-it-solutions" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center gap-1"
+                  className="hover:text-primary transition-colors flex items-center gap-1 opacity-60 hover:opacity-100"
                 >
-                  Experience by <span className="font-semibold text-slate-400 hover:text-white transition-colors">Wedoxa Intelligence</span>
+                  Experience by <span className="font-semibold text-slate-300">Wedoxa Intelligence</span>
                 </a>
               </div>
           </div>

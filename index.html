@@ -25,22 +25,31 @@
             colors: {
               primary: {
                 DEFAULT: '#0066FF',
-                light: '#4d94ff',
-                dark: '#0047b3',
+                light: '#4D94FF',
+                dark: '#0047B3',
+                vibrant: '#2563EB', // New vibrant shade
               },
               silver: {
-                50: '#f8fafc',
-                100: '#f1f5f9',
-                200: '#e2e8f0',
-                300: '#cbd5e1',
-                400: '#94a3b8',
-                500: '#64748b',
+                50: '#F8FAFC',
+                100: '#F1F5F9',
+                200: '#E2E8F0',
+                300: '#CBD5E1',
+                400: '#94A3B8',
+                500: '#64748B',
               },
+              dark: {
+                bg: '#020617', // Deeper black/blue for modern dark mode
+                card: '#0F172A',
+              }
             },
             boxShadow: {
-              'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
-              'glow': '0 0 20px rgba(0, 102, 255, 0.3)',
-              'inner-light': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.3)',
+              'soft': '0 20px 40px -10px rgba(0,0,0,0.05)',
+              'glow': '0 0 20px rgba(0, 102, 255, 0.4)',
+              'neon': '0 0 10px rgba(0, 102, 255, 0.5), 0 0 20px rgba(0, 102, 255, 0.3)',
+              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+            },
+            backgroundImage: {
+              'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
             },
             animation: {
               'float': 'float 6s ease-in-out infinite',
@@ -54,6 +63,8 @@
               'fume': 'fume 1.5s ease-out infinite',
               'road-move': 'roadMove 1s linear infinite',
               'bus-cross': 'busCross 2.5s linear infinite',
+              'ken-burns': 'kenBurns 20s ease-out infinite alternate',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             },
             keyframes: {
               float: {
@@ -102,6 +113,10 @@
               busCross: {
                 '0%': { left: '-10%' },
                 '100%': { left: '110%' }
+              },
+              kenBurns: {
+                '0%': { transform: 'scale(1)' },
+                '100%': { transform: 'scale(1.1)' }
               }
             }
           }
@@ -110,26 +125,56 @@
     </script>
     <style>
       ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: #0f172a; }
+      ::-webkit-scrollbar-track { background: #020617; }
       ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: #0066FF; }
       
       .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
       }
       .dark .glass-card {
         background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
       }
       
-      .animation-delay-2000 {
-        animation-delay: 2s;
+      .bg-noise {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
-      .animation-delay-4000 {
-        animation-delay: 4s;
+      .dark .bg-noise {
+        opacity: 0.04;
+      }
+
+      .animation-delay-2000 { animation-delay: 2s; }
+      .animation-delay-4000 { animation-delay: 4s; }
+      
+      /* Input autofill fix */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active{
+          -webkit-box-shadow: 0 0 0 30px white inset !important;
+          -webkit-text-fill-color: #0F172A !important;
+          transition: background-color 5000s ease-in-out 0s;
+      }
+      .dark input:-webkit-autofill,
+      .dark input:-webkit-autofill:hover, 
+      .dark input:-webkit-autofill:focus, 
+      .dark input:-webkit-autofill:active{
+          -webkit-box-shadow: 0 0 0 30px #0F172A inset !important;
+          -webkit-text-fill-color: white !important;
       }
     </style>
   <script type="importmap">
@@ -140,12 +185,15 @@
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "jspdf": "https://esm.sh/jspdf@^4.1.0",
     "lucide-react": "https://esm.sh/lucide-react@^0.574.0",
-    "sweetalert2": "https://esm.sh/sweetalert2@^11.26.18"
+    "sweetalert2": "https://esm.sh/sweetalert2@^11.26.18",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "vite": "https://esm.sh/vite@^7.3.1"
   }
 }
 </script>
 </head>
-  <body class="bg-silver-50 dark:bg-slate-950 text-slate-900 dark:text-white antialiased transition-colors duration-300 selection:bg-primary/30 selection:text-primary-dark">
+  <body class="bg-silver-50 dark:bg-dark-bg text-slate-900 dark:text-white antialiased transition-colors duration-500 selection:bg-primary/30 selection:text-primary-dark">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

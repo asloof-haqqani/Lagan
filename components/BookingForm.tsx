@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { Calendar, Clock, MapPin, User, Phone, Bus, Users, CreditCard, ChevronDown } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Phone, Bus, Users, CreditCard, ChevronDown, Plus, Minus } from 'lucide-react';
 import { BUS_SERVICES, CITIES, ADMIN_WHATSAPP_NUMBER, BANK_DETAILS } from '../constants';
 import { BookingFormData } from '../types';
 
@@ -34,6 +34,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit }) => {
     const service = BUS_SERVICES[formData.bus];
     if (!service) return 0;
     return service.price * (formData.maleSeats + formData.femaleSeats);
+  };
+
+  const updateSeats = (type: 'male' | 'female', delta: number) => {
+    setFormData(prev => {
+      const current = type === 'male' ? prev.maleSeats : prev.femaleSeats;
+      const newVal = Math.max(0, Math.min(10, current + delta)); // Limit 0-10
+      return {
+        ...prev,
+        [type === 'male' ? 'maleSeats' : 'femaleSeats']: newVal
+      };
+    });
   };
 
   const showBankDetails = () => {
@@ -95,223 +106,215 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] shadow-soft overflow-hidden animate-fade-in-up">
+    <div className="glass-card rounded-[2.5rem] shadow-glass overflow-hidden animate-fade-in-up relative z-10">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-50"></div>
+      
       <div className="p-6 md:p-12">
-        <div className="flex items-center justify-between mb-8 md:mb-10">
-          <div className="flex items-center gap-4">
-             <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary shadow-inner">
-                <Calendar className="w-6 h-6 md:w-7 md:h-7" />
+        <div className="flex items-center justify-between mb-8 md:mb-12">
+          <div className="flex items-center gap-5">
+             <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-white flex items-center justify-center shadow-lg shadow-primary/25 transform -rotate-3">
+                <Calendar className="w-7 h-7 md:w-8 md:h-8" strokeWidth={2} />
              </div>
              <div>
-                <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Plan Your Journey</h2>
-                <p className="text-slate-500 text-xs md:text-sm">Fill in the details to reserve your seat</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">New Booking</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base">Secure your seat in seconds</p>
              </div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
-          {/* Main Inputs Grid */}
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-5 md:gap-y-6">
-            
-            {/* Input Group: Personal */}
-            <div className="col-span-full mb-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    Passenger Info
-                </h3>
-                <div className="grid md:grid-cols-2 gap-5 md:gap-6">
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">Full Name</label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                required
-                                className="w-full pl-11 md:pl-12 pr-4 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
-                                placeholder="John Doe"
-                                value={formData.name}
-                                onChange={e => setFormData({...formData, name: e.target.value})}
-                            />
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                        </div>
-                    </div>
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">WhatsApp Number</label>
-                        <div className="relative">
-                            <input
-                                type="tel"
-                                required
-                                pattern="[0-9]*"
-                                className="w-full pl-11 md:pl-12 pr-4 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
-                                placeholder="07XXXXXXXX"
-                                value={formData.phone}
-                                onChange={e => setFormData({...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 12)})}
-                            />
-                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                        </div>
-                    </div>
+          
+          {/* Section 1: Journey */}
+          <div className="space-y-4">
+             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Journey Details</h3>
+             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                    <MapPin size={20} />
+                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                    <ChevronDown size={16} />
+                  </div>
+                  <select
+                    value={formData.from}
+                    onChange={e => setFormData({...formData, from: e.target.value})}
+                    className="w-full pl-12 pr-10 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all appearance-none font-medium text-slate-700 dark:text-slate-200"
+                    required
+                  >
+                    <option value="" disabled>Pickup Location</option>
+                    {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
-            </div>
 
-            {/* Input Group: Route */}
-            <div className="col-span-full border-t border-slate-200/50 dark:border-slate-800/50 pt-6 mb-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    Route & Service
-                </h3>
-                <div className="grid md:grid-cols-2 gap-5 md:gap-6">
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">From</label>
-                        <div className="relative">
-                            <select
-                                required
-                                className="w-full pl-11 md:pl-12 pr-10 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium appearance-none text-slate-900 dark:text-white"
-                                value={formData.from}
-                                onChange={e => setFormData({...formData, from: e.target.value})}
-                            >
-                                <option value="">Select Origin</option>
-                                {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                        </div>
-                    </div>
-                    
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">To</label>
-                        <div className="relative">
-                            <select
-                                required
-                                className="w-full pl-11 md:pl-12 pr-10 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium appearance-none text-slate-900 dark:text-white"
-                                value={formData.to}
-                                onChange={e => setFormData({...formData, to: e.target.value})}
-                            >
-                                <option value="">Select Destination</option>
-                                {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                        </div>
-                    </div>
-
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">Date</label>
-                        <div className="relative">
-                            <input
-                                type="date"
-                                required
-                                min={new Date().toISOString().split('T')[0]}
-                                className="w-full pl-11 md:pl-12 pr-4 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium text-slate-900 dark:text-white"
-                                value={formData.date}
-                                onChange={e => setFormData({...formData, date: e.target.value})}
-                            />
-                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                        </div>
-                    </div>
-
-                    <div className="relative group">
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">Bus Service</label>
-                        <div className="relative">
-                            <select
-                                required
-                                className="w-full pl-11 md:pl-12 pr-10 py-3.5 md:py-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none font-medium appearance-none text-slate-900 dark:text-white"
-                                value={formData.bus}
-                                onChange={e => handleBusChange(e.target.value)}
-                            >
-                                <option value="">Select Bus</option>
-                                {Object.keys(BUS_SERVICES).map(b => (
-                                    <option key={b} value={b}>{b}</option>
-                                ))}
-                            </select>
-                            <Bus className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                        </div>
-                    </div>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                    <MapPin size={20} />
+                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                    <ChevronDown size={16} />
+                  </div>
+                  <select
+                    value={formData.to}
+                    onChange={e => setFormData({...formData, to: e.target.value})}
+                    className="w-full pl-12 pr-10 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all appearance-none font-medium text-slate-700 dark:text-slate-200"
+                    required
+                  >
+                    <option value="" disabled>Destination</option>
+                    {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
-            </div>
+             </div>
+
+             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                 <div className="relative group">
+                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                        <Calendar size={20} />
+                     </div>
+                     <input
+                        type="date"
+                        value={formData.date}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={e => setFormData({...formData, date: e.target.value})}
+                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-medium text-slate-700 dark:text-slate-200"
+                        required
+                      />
+                 </div>
+                 
+                 <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                        <Bus size={20} />
+                    </div>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                        <ChevronDown size={16} />
+                    </div>
+                    <select
+                        value={formData.bus}
+                        onChange={e => handleBusChange(e.target.value)}
+                        className="w-full pl-12 pr-10 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all appearance-none font-medium text-slate-700 dark:text-slate-200"
+                        required
+                    >
+                        <option value="" disabled>Select Bus Service</option>
+                        {Object.keys(BUS_SERVICES).map(bus => (
+                        <option key={bus} value={bus}>
+                            {bus} ({BUS_SERVICES[bus].time}) - LKR {BUS_SERVICES[bus].price}
+                        </option>
+                        ))}
+                    </select>
+                 </div>
+             </div>
           </div>
 
-          {/* Seat Selection Cards */}
-          <div className="border-t border-slate-200/50 dark:border-slate-800/50 pt-6">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                Seat Allocation
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 md:p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group cursor-pointer">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-bold text-blue-600 dark:text-blue-400 group-hover:text-blue-700 transition-colors">Male Seats</span>
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-full text-blue-500 group-hover:scale-110 transition-transform">
-                    <Users size={20} />
+          <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
+
+          {/* Section 2: Passengers & Contact */}
+          <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Personal Info</h3>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                        <User size={20} />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={e => setFormData({...formData, name: e.target.value})}
+                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
+                        required
+                    />
                   </div>
-                </div>
-                <div className="relative">
-                    <select 
-                        className="w-full p-3 rounded-xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 font-bold text-center appearance-none focus:ring-2 focus:ring-blue-500 outline-none transition-shadow"
-                        value={formData.maleSeats}
-                        onChange={e => setFormData({...formData, maleSeats: parseInt(e.target.value)})}
-                    >
-                        {[...Array(11)].map((_, i) => <option key={i} value={i}>{i} Seat{i!==1 && 's'}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-300 pointer-events-none" size={16} />
-                </div>
-              </div>
-              
-              <div className="p-5 md:p-6 rounded-3xl border border-pink-100 dark:border-pink-900/30 bg-pink-50/50 dark:bg-pink-900/10 hover:border-pink-500 hover:shadow-lg hover:shadow-pink-500/10 transition-all duration-300 group cursor-pointer">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-bold text-pink-600 dark:text-pink-400 group-hover:text-pink-700 transition-colors">Female Seats</span>
-                  <div className="p-2 bg-pink-100 dark:bg-pink-900/50 rounded-full text-pink-500 group-hover:scale-110 transition-transform">
-                    <Users size={20} />
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                        <Phone size={20} />
+                    </div>
+                    <input
+                        type="tel"
+                        placeholder="Mobile Number (07...)"
+                        value={formData.phone}
+                        onChange={e => setFormData({...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
+                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-2xl focus:border-primary/50 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
+                        required
+                    />
                   </div>
-                </div>
-                <div className="relative">
-                    <select 
-                        className="w-full p-3 rounded-xl bg-white dark:bg-slate-900 border border-pink-200 dark:border-pink-800 font-bold text-center appearance-none focus:ring-2 focus:ring-pink-500 outline-none transition-shadow"
-                        value={formData.femaleSeats}
-                        onChange={e => setFormData({...formData, femaleSeats: parseInt(e.target.value)})}
-                    >
-                        {[...Array(11)].map((_, i) => <option key={i} value={i}>{i} Seat{i!==1 && 's'}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-pink-300 pointer-events-none" size={16} />
-                </div>
               </div>
-            </div>
+
+              <div className="space-y-4">
+                 <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Seat Selection</h3>
+                 
+                 {/* Male Seats Stepper */}
+                 <div className="flex items-center justify-between p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+                     <span className="text-sm font-bold text-blue-900 dark:text-blue-200">Male Seats</span>
+                     <div className="flex items-center gap-4 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm">
+                         <button 
+                           type="button" 
+                           onClick={() => updateSeats('male', -1)}
+                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                         >
+                            <Minus size={16} />
+                         </button>
+                         <span className="w-4 text-center font-bold text-lg text-slate-900 dark:text-white">{formData.maleSeats}</span>
+                         <button 
+                           type="button" 
+                           onClick={() => updateSeats('male', 1)}
+                           className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-600 text-blue-700 dark:text-white hover:bg-blue-200 dark:hover:bg-blue-500 transition-colors"
+                         >
+                            <Plus size={16} />
+                         </button>
+                     </div>
+                 </div>
+
+                 {/* Female Seats Stepper */}
+                 <div className="flex items-center justify-between p-4 rounded-2xl bg-pink-50 dark:bg-pink-900/10 border border-pink-100 dark:border-pink-900/30">
+                     <span className="text-sm font-bold text-pink-900 dark:text-pink-200">Female Seats</span>
+                     <div className="flex items-center gap-4 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm">
+                         <button 
+                           type="button" 
+                           onClick={() => updateSeats('female', -1)}
+                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                         >
+                            <Minus size={16} />
+                         </button>
+                         <span className="w-4 text-center font-bold text-lg text-slate-900 dark:text-white">{formData.femaleSeats}</span>
+                         <button 
+                           type="button" 
+                           onClick={() => updateSeats('female', 1)}
+                           className="w-8 h-8 flex items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-600 text-pink-700 dark:text-white hover:bg-pink-200 dark:hover:bg-pink-500 transition-colors"
+                         >
+                            <Plus size={16} />
+                         </button>
+                     </div>
+                 </div>
+              </div>
           </div>
 
-          {/* Footer / Total */}
-          {formData.bus && (
-            <div className="rounded-[1.5rem] md:rounded-3xl bg-slate-900 p-1 shadow-2xl shadow-slate-900/20">
-                <div className="rounded-[1.2rem] md:rounded-[20px] bg-gradient-to-r from-slate-900 to-slate-800 p-6 md:p-8 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-grid-white/5 bg-[size:20px_20px] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
-                        <div className="text-center md:text-left">
-                            <p className="text-slate-400 text-xs md:text-sm mb-1 uppercase tracking-wider font-semibold">Total Estimated Amount</p>
-                            <div className="flex items-baseline gap-2 justify-center md:justify-start">
-                                <span className="text-3xl md:text-4xl font-black text-white tracking-tight">LKR {calculateTotal().toLocaleString()}</span>
-                                <span className="text-slate-500 text-xs md:text-sm">/ {formData.maleSeats + formData.femaleSeats} seats</span>
-                            </div>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button
-                                type="button"
-                                onClick={showBankDetails}
-                                className="flex-1 px-6 py-3.5 md:py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all border border-white/10 flex items-center justify-center"
-                            >
-                                <CreditCard className="mr-2 md:mr-0" size={20} />
-                                <span className="md:hidden">Bank Info</span>
-                            </button>
-                            <button
-                                type="submit"
-                                className="flex-[3] px-8 py-3.5 md:py-4 rounded-xl bg-primary hover:bg-primary-light text-white font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] hover:shadow-primary/40"
-                            >
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-5 h-5 md:w-6 md:h-6" alt="WA" />
-                                <span>Confirm Booking</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          )}
+          <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
+
+          {/* Section 3: Summary & Submit */}
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Estimated Cost</p>
+                  <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                      LKR {calculateTotal().toLocaleString()}
+                  </p>
+              </div>
+              <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+                  <button
+                    type="button"
+                    onClick={showBankDetails}
+                    className="px-6 py-4 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                     <CreditCard size={18} />
+                     <span className="hidden sm:inline">Bank Details</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-10 py-4 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-[0.98] w-full md:w-auto flex items-center justify-center gap-2"
+                  >
+                     Confirm Booking
+                  </button>
+              </div>
+          </div>
+
         </form>
       </div>
     </div>

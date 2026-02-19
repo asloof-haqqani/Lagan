@@ -13,13 +13,13 @@ const Hero: React.FC<HeroProps> = ({ onBookNow }) => {
 
   return (
     <div className="relative min-h-[100svh] md:min-h-[110vh] flex items-center justify-center overflow-hidden pb-20">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/50 to-transparent z-10" />
+      {/* Dynamic Background with Ken Burns Effect */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-silver-50 dark:to-dark-bg z-10" />
         <img 
             src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=2560&q=80" 
             alt="Luxury Bus" 
-            className="w-full h-full object-cover animate-[scale-slow_30s_ease-in-out_infinite_alternate]"
+            className="w-full h-full object-cover animate-ken-burns scale-110"
         />
       </div>
 
@@ -59,7 +59,7 @@ const Hero: React.FC<HeroProps> = ({ onBookNow }) => {
                 </button>
                 <button 
                     onClick={openAdminWhatsApp}
-                    className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-lg hover:bg-white/20 hover:border-white/40 transition-all duration-300 flex items-center justify-center gap-3"
+                    className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white font-bold text-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 flex items-center justify-center gap-3"
                 >
                     <Phone className="w-5 h-5" />
                     <span>Support</span>
